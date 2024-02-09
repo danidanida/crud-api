@@ -25,10 +25,12 @@ export const handleServerError = (res: http.ServerResponse) => {
 
 export const handleInvalidPaylod = (res: http.ServerResponse) => {
     res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: "Invalid user payload." }));
+    res.end(JSON.stringify({ message: "Invalid user payload." }));
 }
 
 export const handleMethodNotAllowed = (res: http.ServerResponse) => {
     res.writeHead(405, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ message: 'Method Not Allowed' }));
 }
+
+
