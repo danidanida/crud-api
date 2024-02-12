@@ -2,29 +2,26 @@ import { ServerResponse, IncomingMessage } from 'http';
 import { User } from '../../types/user.interface';
 import { findAll, find, create, update, deleteById } from "./users.model";
 import { handleInvalidUUID, handleNotFound, handleInvalidPaylod, handleServerError } from '../../middlewares/errorHandler';
-import { formatJSONResponse } from '../../middlewares/formatResponse';
+import { handleResponse } from '../../middlewares/handleResponse';
 
 export const getAllUsers = (res: ServerResponse) => {
     const users = findAll();
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(formatJSONResponse(200, users || []));
+    handleResponse(res, 200, users || [])
 }
 
 export const getUserById = (id: string, res: ServerResponse) => {
     const user = find(id);
     if (user) {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(formatJSONResponse(200, user));
+        handleResponse(res, 200, user || [])
     } else {
-        handleInvalidUUID(res);
+        handleNotFound(res);
     }
 }
 
 export const createUser = (res: ServerResponse, parsedBody: any) => {
     try {
         const newUser = create(parsedBody);
-        res.writeHead(201, { 'Content-Type': 'application/json' });
-        res.end(formatJSONResponse(201, newUser));
+        handleResponse(res, 201, newUser)
     } catch (error) {
         handleInvalidPaylod(res);
     }
@@ -38,9 +35,7 @@ export const updateUser = (res: ServerResponse, parsedBody: any, id: string) => 
             handleNotFound(res)
         }
         const updatedUser = update(id, parsedBody)
-
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(formatJSONResponse(200, updatedUser || {}));
+        handleResponse(res, 200, updatedUser || {})
     } catch (error) {
         handleInvalidPaylod(res);
     }
@@ -51,12 +46,11 @@ export const deleteUserById = (id: string, res: ServerResponse) => {
     if (user) {
         let result = deleteById(id);
         if (result) {
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(formatJSONResponse(204, []));
+            handleResponse(res, 204, [])
         } else {
             handleServerError(res)
         }
     } else {
-        handleInvalidUUID(res);
+        handleNotFound(res);
     }
 }
